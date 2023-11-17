@@ -4,13 +4,14 @@ import (
 	"errors"
 	co "latihan_golang/constants"
 	dm "latihan_golang/domains"
+	"strings"
 
 	"gorm.io/gorm"
 )
 
 type RepoUserItf interface {
 	CreateUser(user dm.User) error
-	GetUsers() ([]dm.User, int64, error)
+	GetUsers(searching string, sorting string, filterRole string) ([]dm.User, int64, error)
 	GetUserById(id uint) (dm.User, error)
 	UpdateUser(id uint, user dm.User) error
 	DeleteUser(id uint) error
@@ -25,15 +26,38 @@ func NewRepoUser(db *gorm.DB) *RepoUser {
 }
 
 func (ru RepoUser) CreateUser(user dm.User) error {
+
+	// validate email
+	isEmailFound := ru.Db.Where("lower(users.email) = ?", strings.ToLower(user.Email)).
+		First(&dm.User{}).RowsAffected
+	if isEmailFound > 0 {
+		return errors.New(co.EmailExists)
+	}
+
 	err := ru.Db.Create(&user).Error
 	return err
 }
 
-func (ru RepoUser) GetUsers() ([]dm.User, int64, error) {
+func (ru RepoUser) GetUsers(searching string, sorting string, filterRole string) ([]dm.User, int64, error) {
 	var users []dm.User
 	var countRow int64
+	var err error
 
-	err := ru.Db.Model(&dm.User{}).Count(&countRow).Find(&users).Error
+	searching = "%" + strings.ToLower(searching) + "%"
+	filterRole = strings.ToLower(filterRole)
+	sorting = strings.ToLower(sorting)
+
+	// filter role
+	if len(strings.TrimSpace(filterRole)) > 0 {
+		err = ru.Db.Model(&dm.User{}).
+			Where("(lower(users.first_name) like ? or lower(users.last_name) like ? or lower(users.email) like ?) and lower(users.role)=?", searching, searching, searching, filterRole).
+			Count(&countRow).Order(sorting).Find(&users).Error
+		return users, countRow, err
+	}
+
+	err = ru.Db.Model(&dm.User{}).
+		Where("lower(users.first_name) like ? or lower(users.last_name) like ? or lower(users.email) like ?", searching, searching, searching).
+		Count(&countRow).Order(sorting).Find(&users).Error
 	return users, countRow, err
 }
 

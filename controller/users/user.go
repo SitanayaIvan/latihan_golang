@@ -51,8 +51,11 @@ func (cu ControllerUser) CreateUser(c *gin.Context) {
 }
 
 func (cu ControllerUser) GetUsers(c *gin.Context) {
+	searching := c.Query("searching")
+	sorting := c.Query("sorting")
+	filterRole := c.Query("filter-role")
 
-	users, countRow, err := cu.User.GetUsers()
+	users, countRow, err := cu.User.GetUsers(searching, sorting, filterRole)
 	if err != nil {
 		httpStatus = 400
 		c.JSON(httpStatus, dm.Error{
