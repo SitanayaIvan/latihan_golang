@@ -10,7 +10,7 @@ import (
 func LoadEnv() (dm.ConfigBody, error) {
 	var confBody dm.ConfigBody
 
-	err := dotenv.Load()
+	err := dotenv.Load(".env")
 	if err != nil {
 		err = nil
 	}
