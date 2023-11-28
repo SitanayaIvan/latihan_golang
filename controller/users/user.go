@@ -21,7 +21,7 @@ func NewControllerUser(user ru.RepoUserItf) *ControllerUser {
 
 var httpStatus int
 
-func (cu ControllerUser) CreateUser(c *gin.Context) {
+func (cu *ControllerUser) CreateUser(c *gin.Context) {
 	var user dm.User
 
 	err := c.ShouldBindJSON(&user)
@@ -50,7 +50,7 @@ func (cu ControllerUser) CreateUser(c *gin.Context) {
 	})
 }
 
-func (cu ControllerUser) GetUsers(c *gin.Context) {
+func (cu *ControllerUser) GetUsers(c *gin.Context) {
 	searching := c.Query("searching")
 	sorting := c.Query("sorting")
 	filterRole := c.Query("filter-role")
@@ -73,7 +73,7 @@ func (cu ControllerUser) GetUsers(c *gin.Context) {
 	})
 }
 
-func (cu ControllerUser) GetUserById(c *gin.Context) {
+func (cu *ControllerUser) GetUserById(c *gin.Context) {
 	id, _ := strconv.Atoi(c.Param("id"))
 
 	user, err := cu.User.GetUserById(uint(id))
@@ -98,7 +98,7 @@ func (cu ControllerUser) GetUserById(c *gin.Context) {
 	})
 }
 
-func (cu ControllerUser) UpdateUser(c *gin.Context) {
+func (cu *ControllerUser) UpdateUser(c *gin.Context) {
 	id, _ := strconv.Atoi(c.Param("id"))
 
 	var user dm.User
@@ -134,7 +134,7 @@ func (cu ControllerUser) UpdateUser(c *gin.Context) {
 	})
 }
 
-func (cu ControllerUser) DeleteUser(c *gin.Context) {
+func (cu *ControllerUser) DeleteUser(c *gin.Context) {
 	id, _ := strconv.Atoi(c.Param("id"))
 
 	err := cu.User.DeleteUser(uint(id))

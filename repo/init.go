@@ -12,6 +12,6 @@ type Repo struct {
 
 func NewRepo(db *gorm.DB) *Repo {
 	return &Repo{
-		User: *ru.NewRepoUser(db),
+		User: ru.NewRepoUser(db),
 	}
 }

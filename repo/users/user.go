@@ -25,7 +25,7 @@ func NewRepoUser(db *gorm.DB) *RepoUser {
 	return &RepoUser{Db: db}
 }
 
-func (ru RepoUser) CreateUser(user dm.User) error {
+func (ru *RepoUser) CreateUser(user dm.User) error {
 
 	// validate email
 	isEmailFound := ru.Db.Where("lower(users.email) = ?", strings.ToLower(user.Email)).
@@ -38,7 +38,7 @@ func (ru RepoUser) CreateUser(user dm.User) error {
 	return err
 }
 
-func (ru RepoUser) GetUsers(searching string, sorting string, filterRole string) ([]dm.User, int64, error) {
+func (ru *RepoUser) GetUsers(searching string, sorting string, filterRole string) ([]dm.User, int64, error) {
 	var users []dm.User
 	var countRow int64
 	var err error
@@ -61,7 +61,7 @@ func (ru RepoUser) GetUsers(searching string, sorting string, filterRole string)
 	return users, countRow, err
 }
 
-func (ru RepoUser) GetUserById(id uint) (dm.User, error) {
+func (ru *RepoUser) GetUserById(id uint) (dm.User, error) {
 	var user dm.User
 
 	err := ru.Db.First(&user, id).Error
@@ -71,7 +71,7 @@ func (ru RepoUser) GetUserById(id uint) (dm.User, error) {
 	return user, err
 }
 
-func (ru RepoUser) UpdateUser(id uint, user dm.User) error {
+func (ru *RepoUser) UpdateUser(id uint, user dm.User) error {
 	// search for id
 	err := ru.Db.First(&dm.User{}, id).Error
 	if err != nil {
@@ -89,7 +89,7 @@ func (ru RepoUser) UpdateUser(id uint, user dm.User) error {
 	return err
 }
 
-func (ru RepoUser) DeleteUser(id uint) error {
+func (ru *RepoUser) DeleteUser(id uint) error {
 	// search for id
 	err := ru.Db.First(&dm.User{}, id).Error
 	if err != nil {
